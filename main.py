@@ -162,7 +162,7 @@ def get_calorie(message):
             f"{str(calories_result)}"
         )
         bot.reply_to(message, rate, parse_mode="HTML")
-    except DBAPIerrors as e:
+    except exc.SQLAlchemyError as e:
         bot.reply_to(
             message, (f"Ошибка {e}."))
 
