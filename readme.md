@@ -12,7 +12,10 @@
 
 3.Установка библиотек
 
-``` ```
+```pip install googletrans```
+```pip install requests```
+```pip install pyTelegramBotAPI```
+```pip install SQLAlchemy```
 
 
 
