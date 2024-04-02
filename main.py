@@ -3,9 +3,17 @@ from random import randint
 from googletrans import Translator
 import requests
 import telebot
-from sqlalchemy import text
+from sqlalchemy import text, exc
 
-from config import TELEGRAM_TOKEN, TRAINING_URL, CALORIE_URL, RECIPE_URL, TRAINING_API, RECIPE_API, CALORIE_API
+from config import (
+    TELEGRAM_TOKEN,
+    TRAINING_URL,
+    CALORIE_URL,
+    RECIPE_URL,
+    TRAINING_API,
+    RECIPE_API,
+    CALORIE_API
+)
 from db_connect import db
 
 translator = Translator()
@@ -28,8 +36,7 @@ def send_welcome(message):
         f"/delete - Позволяет удалить данные потребленных продуктов."
     )
 
-    bot.send_message(
-        message.chat.id, start_msg)
+    bot.send_message(message.chat.id, start_msg)
 
 
 @bot.message_handler(commands=['recipe'])
@@ -40,15 +47,16 @@ def recipe_com(message):
 
 @bot.message_handler(commands=['calorie'])
 def calorie_com(message):
-    bot.send_message(
-        message.chat.id, 'Введите полное наименование продукта')
+    message_error = 'Введите полное наименование продукта'
+    bot.send_message(message.chat.id, message_error)
     bot.register_next_step_handler(message, get_calorie)
 
 
 @bot.message_handler(commands=['training'])
 def training_com(message):
+    message_error = 'Введите уровень интенсивности упражнений от 1 до 9'
     bot.send_message(
-        message.chat.id, 'Введите уровень интенсивности упражнений от 1 до 9')
+        message.chat.id, message_error)
     bot.register_next_step_handler(message, get_training)
 
 
@@ -142,7 +150,7 @@ def get_calorie(message):
             f"{str(calories_result)}"
         )
         bot.reply_to(message, rate, parse_mode="HTML")
-    except Exception as e:
+    except DBAPIerrors as e:
         bot.reply_to(
             message, (f"Ошибка {e}."))
 
@@ -159,7 +167,7 @@ def get_products(message):
                 f"WHERE user_id = {user_id};"
             )
         ).fetchall()
-    except Exception as e:
+    except exc.SQLAlchemyError as e:
         bot.reply_to(
             message, (f"Ошибка {e}."))
 
@@ -185,7 +193,7 @@ def get_calories_total(message):
                 f"WHERE user_id = {user_id};"
             )
         ).fetchall()
-    except Exception as e:
+    except exc.SQLAlchemyError as e:
         bot.reply_to(
             message, (f"Ошибка {e}."))
 
@@ -201,7 +209,7 @@ def get_calories_total(message):
 @bot.message_handler(commands=['delete'])
 def delete_products(message):
     user_id = message.from_user.id
-    
+
     try:
         user_products = db.execute(
             text(
@@ -210,7 +218,7 @@ def delete_products(message):
                 f"WHERE user_id = {user_id};"
             )
         )
-    except Exception as e:
+    except exc.SQLAlchemyError as e:
         bot.reply_to(
             message, (f"Ошибка {e}."))
 
