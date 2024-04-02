@@ -10,7 +10,7 @@
 
 ```source venv/bin/activate```
 
-3.Установка библиотек
+3. Установка библиотек
 
 ```pip install googletrans```
 
