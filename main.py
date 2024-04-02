@@ -26,6 +26,8 @@ bot = telebot.TeleBot(TELEGRAM_TOKEN)
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
+    """Функция при вводе /start возвращает следующее сообщение с командами"""
+
     start_msg = (
         f"Приветствую. У данного бота есть несколько функций:\n"
         f"/calorie - Позволяет получить калории потребленного продукта на 100г.\n"
@@ -41,12 +43,16 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['recipe'])
 def recipe_com(message):
+    """Функция при вводе /recipe запрашивает название блюда"""
+
     bot.send_message(message.chat.id, 'Введите название блюда')
     bot.register_next_step_handler(message, get_recipe)
 
 
 @bot.message_handler(commands=['calorie'])
 def calorie_com(message):
+    """Функция при вводе /calorie запрашивает название продукта"""
+
     message_error = 'Введите полное наименование продукта'
     bot.send_message(message.chat.id, message_error)
     bot.register_next_step_handler(message, get_calorie)
@@ -54,6 +60,8 @@ def calorie_com(message):
 
 @bot.message_handler(commands=['training'])
 def training_com(message):
+    """Функция при вводе /training запрашивает уровень интенсивности тренировки"""
+
     message_error = 'Введите уровень интенсивности упражнений от 1 до 9'
     bot.send_message(
         message.chat.id, message_error)
@@ -62,6 +70,8 @@ def training_com(message):
 
 @bot.message_handler(commands=['training'])
 def get_training(message):
+    """Функция возвращает тренировку = введенному уровню."""
+
     try:
         training = int(message.text)
     except ValueError:
@@ -108,6 +118,8 @@ def get_training(message):
 
 @bot.message_handler(commands=['calorie'])
 def get_calorie(message):
+    """Функция возвращает количество калорий введенного продукта и добавляет его в базу данных"""
+
     user_id = message.from_user.id
     calorie = message.text
     calorie_en = translator.translate(calorie, src="ru", dest="en").text
@@ -157,6 +169,8 @@ def get_calorie(message):
 
 @bot.message_handler(commands=['products'])
 def get_products(message):
+    """Функция возвращает список продуктов из базы данных"""
+
     user_id = message.from_user.id
 
     try:
@@ -182,6 +196,8 @@ def get_products(message):
 
 @bot.message_handler(commands=['total'])
 def get_calories_total(message):
+    """Функция возвращает общее количество калорий продуктов из базы данных"""
+
     user_id = message.from_user.id
     total_calories = 0
 
@@ -208,6 +224,8 @@ def get_calories_total(message):
 
 @bot.message_handler(commands=['delete'])
 def delete_products(message):
+    """Функция удаляет продукты из базы данных"""
+
     user_id = message.from_user.id
 
     try:
@@ -241,6 +259,8 @@ def delete_products(message):
 
 @bot.message_handler(commands=['recipe'])
 def get_recipe(message):
+    """Функция возвращает рецепт введенного блюда."""
+
     name_dish = message.text
     name_dish_en = translator.translate(
         name_dish, src="ru", dest="en").text
